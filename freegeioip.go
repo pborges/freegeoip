@@ -1,5 +1,6 @@
 // Package freegeoip provides a method for getting the physical location of an IP address using the freegeoip.net service
 package freegeoip
+
 import (
 	"net/http"
 	"fmt"
@@ -8,7 +9,9 @@ import (
 	"strconv"
 )
 
-const freeGeoIpHostLookupUrl string = "http://freegeoip.net/json/%s"
+const freeGeoIpHostLookupUrl string = "http://%s/json/%s"
+
+var Hostname string = "freegeoip.net"
 
 type Location struct {
 	Ip          string `json:"ip"`
@@ -25,8 +28,10 @@ type Location struct {
 
 // Lookup returns the GeoIP data for the given hostname or IP address.
 func Lookup(host string) (l Location, err error) {
-	res, err := http.Get(fmt.Sprintf(freeGeoIpHostLookupUrl, host))
-	if err != nil { return }
+	res, err := http.Get(fmt.Sprintf(freeGeoIpHostLookupUrl, Hostname, host))
+	if err != nil {
+		return
+	}
 	defer res.Body.Close()
 	if res.StatusCode != 200 {
 		err = errors.New("Invalid status code, expected 200 got " + strconv.Itoa(res.StatusCode))
